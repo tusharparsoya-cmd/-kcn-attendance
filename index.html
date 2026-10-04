@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#173b8f">
+<title>KCN Attendance | B.Sc. Nursing</title>
+<style>
+:root{--blue:#173b8f;--blue2:#2857c5;--bg:#f3f6fb;--ink:#172033;--muted:#687386;--green:#16834a;--red:#c03535;--amber:#9a6700;--line:#e3e8f0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+header{background:linear-gradient(120deg,#173b8f,#2f65ce);color:#fff;padding:22px 18px 28px}
+.top{max-width:1000px;margin:auto;display:flex;align-items:center;gap:13px}.logo{height:48px;width:48px;border-radius:15px;background:#ffffff22;display:grid;place-items:center;font-size:25px}
+h1{font-size:22px;margin:0}header p{margin:4px 0 0;color:#e3eaff;font-size:13px}
+main{max-width:1000px;margin:-14px auto 30px;padding:0 14px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 5px 20px #102b5810}
+h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:0 0 8px}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 5px}
+input,select,button{font:inherit}input,select{width:100%;padding:12px;border:1px solid #ccd5e3;border-radius:10px;background:white;color:var(--ink)}
+button{border:0;border-radius:10px;padding:11px 14px;background:var(--blue);color:white;font-weight:650;cursor:pointer}
+button.secondary{background:#eaf0ff;color:var(--blue)}button.danger{background:#fff0f0;color:var(--red)}button:disabled{opacity:.55;cursor:wait}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.hidden{display:none!important}
+.muted{color:var(--muted);font-size:13px}.message{padding:11px;border-radius:10px;background:#fff7df;color:#725000;font-size:13px;margin:12px 0;white-space:pre-wrap}.message.error{background:#fff0f0;color:#a22}.message.ok{background:#e9f8ef;color:#126438}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.stat{background:#f5f7fc;border-radius:12px;padding:13px}.stat small{display:block;color:var(--muted)}.stat strong{font-size:24px}
+.progress{height:9px;background:#e7ebf3;border-radius:99px;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:#20a05a;width:0}
+.student{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding:12px 0}.student:last-child{border:0}.student-info{flex:1;min-width:0}.student-info strong{display:block}.student-info small{color:var(--muted)}
+.chips{display:flex;gap:5px;flex-wrap:wrap}.chip{padding:8px 10px;border-radius:9px;border:1px solid #d9dfeb;background:#fff;color:#445;cursor:pointer;font-size:12px;font-weight:700}.chip.selected.p{background:#e5f7ec;border-color:#7cc99b;color:#126438}.chip.selected.a{background:#fff0f0;border-color:#e5a0a0;color:#a22}.chip.selected.l{background:#fff6df;border-color:#e7ca79;color:#805600}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:10px 7px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:600}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+@media(min-width:700px){.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel{padding:22px}.student{gap:16px}}
+</style>
+</head>
+<body>
+<header><div class="top"><div class="logo">🩺</div><div><h1>KCN Attendance</h1><p>B.Sc. Nursing · Smart Attendance Portal</p></div></div></header>
+<main>
+  <section id="setupNotice" class="panel">
+    <h2>पहली बार सेटअप</h2>
+    <p class="muted">इस वेबसाइट को ऑनलाइन चलाने के लिए Firebase project की configuration नीचे डालें। अपनी Firebase config सार्वजनिक वेबसाइट में रखना सामान्य है, लेकिन Firestore Security Rules सही लगाना बहुत ज़रूरी है।</p>
+    <label for="config">Firebase web config (Firebase Console → Project settings → Your apps)</label>
+    <textarea id="config" rows="5" style="width:100%;padding:12px;border:1px solid #ccd5e3;border-radius:10px;font:12px monospace" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","appId":"..."}'></textarea>
+    <div class="row" style="margin-top:10px"><button id="connectBtn">Firebase से कनेक्ट करें</button><button class="secondary" id="demoBtn">डेमो देखें</button></div>
+    <div id="setupMsg" class="message">अभी Firebase कनेक्ट नहीं है। डेमो में डेटा केवल इसी स्क्रीन पर उदाहरण के लिए दिखेगा।</div>
+  </section>
+
+  <section id="loginPanel" class="panel hidden">
+    <h2>लॉगिन</h2><p class="muted">टीचर और विद्यार्थी को कॉलेज एडमिन द्वारा बनाया गया अकाउंट इस्तेमाल करना होगा।</p>
+    <label for="email">College email</label><input id="email" type="email" autocomplete="username" placeholder="name@college.edu">
+    <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="पासवर्ड">
+    <button id="loginBtn" style="width:100%;margin-top:14px">Login</button>
+    <div id="loginMsg" class="message hidden"></div>
+  </section>
+
+  <section id="dashboard" class="hidden">
+    <div class="panel row" style="justify-content:space-between"><div><h2 id="welcome" style="margin-bottom:4px">Dashboard</h2><div class="muted" id="roleText"></div></div><button class="secondary" id="logoutBtn">Logout</button></div>
+    <section id="teacherView" class="panel hidden">
+      <h2>आज की अटेंडेंस</h2>
+      <div class="row">
+        <div><label for="semester">Semester</label><select id="semester"><option>1st Semester</option><option>2nd Semester</option><option>3rd Semester</option><option>4th Semester</option><option>5th Semester</option><option>6th Semester</option><option>7th Semester</option><option>8th Semester</option></select></div>
+        <div><label for="attDate">Date</label><input id="attDate" type="date"></div>
+      </div>
+      <div id="teacherMsg" class="message hidden"></div>
+      <div class="stats"><div class="stat"><small>कुल विद्यार्थी</small><strong id="totalCount">0</strong></div><div class="stat"><small>Present</small><strong id="presentCount">0</strong></div><div class="stat"><small>Absent</small><strong id="absentCount">0</strong></div></div>
+      <div id="roster"><p class="muted">विद्यार्थियों की सूची लोड हो रही है...</p></div>
+      <button id="saveBtn" style="width:100%;margin-top:15px">अटेंडेंस सेव करें</button>
+    </section>
+    <section id="studentView" class="panel hidden">
+      <h2>मेरी अटेंडेंस</h2>
+      <div class="stats"><div class="stat"><small>कुल रिकॉर्ड</small><strong id="myTotal">0</strong></div><div class="stat"><small>Present</small><strong id="myPresent">0</strong></div><div class="stat"><small>प्रतिशत</small><strong id="myPercent">0%</strong></div></div>
+      <div class="progress"><span id="myProgress"></span></div>
+      <div id="studentMsg" class="message hidden"></div>
+      <div id="myRecords"></div>
+    </section>
+  </section>
+  <section class="panel">
+    <h3>यह वेबसाइट क्या करती है?</h3>
+    <p class="muted">टीचर semester चुनकर Present / Absent / Leave मार्क कर सकते हैं। विद्यार्थी लॉगिन करके अपना रिकॉर्ड और प्रतिशत देख सकते हैं। यह starter version है; कॉलेज में इस्तेमाल करने से पहले एडमिन अकाउंट, नियम और डेटा की जाँच करें।</p>
+  </section>
+</main>
+<footer>KCN Attendance · B.Sc. Nursing · Keep student records private</footer>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, query, where, getDocs, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const $ = id => document.getElementById(id);
+const sems = ["1st Semester","2nd Semester","3rd Semester","4th Semester","5th Semester","6th Semester","7th Semester","8th Semester"];
+const today = new Date();
+$("attDate").value = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+let app, auth, db, currentProfile = null, roster = [], statusMap = {}, demo = false;
+
+function msg(id, text, kind="") { const el=$(id); el.textContent=text; el.className="message"+(kind?" "+kind:""); el.classList.remove("hidden"); }
+function hide(id){$(id).classList.add("hidden")}
+function show(id){$(id).classList.remove("hidden")}
+function setConnected() { hide("setupNotice"); show("loginPanel"); }
+function showDemo() {
+  demo=true; hide("setupNotice"); hide("loginPanel"); show("dashboard"); show("teacherView"); hide("studentView");
+  $("welcome").textContent="Demo Teacher"; $("roleText").textContent="डेमो मोड · डेटा सेव नहीं होगा";
+  roster=[{uid:"demo1",name:"Aarav Sharma"},{uid:"demo2",name:"Priya Kumari"},{uid:"demo3",name:"Rahul Meena"},{uid:"demo4",name:"Neha Singh"}];
+  statusMap={demo1:"Present",demo2:"Present",demo3:"Absent",demo4:"Leave"}; renderRoster();
+  msg("teacherMsg","यह केवल डेमो है। यहाँ की अटेंडेंस Firebase में सेव नहीं होगी।");
+}
+$("demoBtn").addEventListener("click",showDemo);
+$("connectBtn").addEventListener("click", async()=>{
+  try {
+    const cfg=JSON.parse($("config").value);
+    if(!cfg.apiKey || !cfg.projectId || !cfg.appId) throw new Error("Config में apiKey, projectId और appId ज़रूरी हैं।");
+    app=initializeApp(cfg); auth=getAuth(app); db=getFirestore(app);
+    onAuthStateChanged(auth, async user=>{
+      if(!user){hide("dashboard");show("loginPanel");return}
+      try{
+        const snap=await getDoc(doc(db,"users",user.uid));
+        if(!snap.exists()) throw new Error("इस अकाउंट की users profile नहीं मिली। कॉलेज एडमिन से संपर्क करें।");
+        currentProfile={uid:user.uid,...snap.data()};
+        if(!["teacher","student"].includes(currentProfile.role)) throw new Error("Profile role teacher या student होना चाहिए।");
+        hide("loginPanel");show("dashboard");
+        $("welcome").textContent=currentProfile.name||user.email||"KCN User";
+        $("roleText").textContent=currentProfile.role==="teacher"?"Teacher · B.Sc. Nursing":"Student · B.Sc. Nursing";
+        if(currentProfile.role==="teacher"){show("teacherView");hide("studentView");await loadRoster()}
+        else{hide("teacherView");show("studentView");await loadStudentRecords()}
+      }catch(e){show("loginPanel");msg("loginMsg",e.message||"Profile लोड नहीं हुई।","error");}
+    });
+    msg("setupMsg","Firebase configuration पढ़ ली गई।","ok");
+  } catch(e){msg("setupMsg",e.message||"Firebase config सही नहीं है।","error")}
+});
+$("loginBtn").addEventListener("click",async()=>{
+  if(!auth){msg("loginMsg","पहले Firebase config से कनेक्ट करें।","error");return}
+  try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}
+  catch(e){msg("loginMsg","Login नहीं हुआ। Email/password और Firebase Authentication सेटअप जाँचें।","error")}
+});
+$("logoutBtn").addEventListener("click",async()=>{
+  if(demo){demo=false;hide("dashboard");show("setupNotice");return}
+  if(auth) await signOut(auth);
+});
+$("semester").addEventListener("change",()=>{if(demo){statusMap={};renderRoster()}else loadRoster()});
+$("attDate").addEventListener("change",()=>{if(!demo)loadRoster();else statusMap={}});
+$("saveBtn").addEventListener("click",async()=>{
+  if(demo){msg("teacherMsg","डेमो मोड में सेव नहीं किया जा सकता।","error");return}
+  if(!currentProfile || currentProfile.role!=="teacher")return;
+  const date=$("attDate").value, semester=$("semester").value;
+  if(!date){msg("teacherMsg","तारीख चुनें।","error");return}
+  if(roster.some(s=>!statusMap[s.uid])){msg("teacherMsg","कृपया हर विद्यार्थी की Present, Absent या Leave स्थिति चुनें।","error");return}
+  $("saveBtn").disabled=true;
+  try{
+    const batch=writeBatch(db);
+    roster.forEach(s=>{
+      const id=`${date}_${semester.replaceAll(" ","")}_${s.uid}`;
+      batch.set(doc(db,"attendance",id),{
+        date,course:"B.Sc. Nursing",semester,studentUid:s.uid,studentName:s.name,
+        status:statusMap[s.uid],markedBy:currentProfile.uid,updatedAt:serverTimestamp()
+      });
+    });
+    await batch.commit();msg("teacherMsg","अटेंडेंस सफलतापूर्वक सेव हो गई।","ok");
+  }catch(e){msg("teacherMsg","सेव नहीं हुआ। Firestore rules और इंटरनेट जाँचें।","error")}
+  $("saveBtn").disabled=false;
+});
+async function loadRoster(){
+  if(!db||!currentProfile||currentProfile.role!=="teacher")return;
+  $("roster").innerHTML='<p class="muted">लोड हो रहा है...</p>';
+  try{
+    const sem=$("semester").value, date=$("attDate").value;
+    const qs=await getDocs(query(collection(db,"users"),where("role","==","student"),where("course","==","B.Sc. Nursing"),where("semester","==",sem)));
+    roster=qs.docs.map(d=>({uid:d.id,name:d.data().name||"Student"})).sort((a,b)=>a.name.localeCompare(b.name));
+    const existing=await getDocs(query(collection(db,"attendance"),where("date","==",date),where("semester","==",sem),where("course","==","B.Sc. Nursing")));
+    statusMap={};
+    existing.docs.forEach(d=>{const x=d.data();statusMap[x.studentUid]=x.status});
+    renderRoster();
+    if(!roster.length)msg("teacherMsg","इस semester में कोई विद्यार्थी नहीं मिला। Firebase users collection में profiles जोड़ें।");
+    else hide("teacherMsg");
+  }catch(e){$("roster").innerHTML="";msg("teacherMsg","Roster लोड नहीं हुई। Firestore rules/index और users profiles जाँचें।","error")}
+}
+function renderRoster(){
+  $("totalCount").textContent=roster.length;
+  $("presentCount").textContent=roster.filter(s=>statusMap[s.uid]==="Present").length;
+  $("absentCount").textContent=roster.filter(s=>statusMap[s.uid]==="Absent").length;
+  $("roster").innerHTML="";
+  roster.forEach(s=>{
+    const wrap=document.createElement("div");wrap.className="student";
+    const info=document.createElement("div");info.className="student-info";
+    const strong=document.createElement("strong");strong.textContent=s.name;
+    const small=document.createElement("small");small.textContent=statusMap[s.uid]||"Not marked";
+    info.append(strong,small);
+    const chips=document.createElement("div");chips.className="chips";
+    [["Present","p"],["Absent","a"],["Leave","l"]].forEach(([label,cls])=>{
+      const b=document.createElement("button");b.className="chip"+(statusMap[s.uid]===label?" selected "+cls:"");b.textContent=label;
+      b.addEventListener("click",()=>{statusMap[s.uid]=label;renderRoster()});chips.append(b);
+    });
+    wrap.append(info,chips);$("roster").append(wrap);
+  });
+}
+async function loadStudentRecords(){
+  if(!db||!currentProfile)return;
+  $("myRecords").innerHTML='<p class="muted">लोड हो रहा है...</p>';
+  try{
+    const snap=await getDocs(query(collection(db,"attendance"),where("studentUid","==",currentProfile.uid),where("course","==","B.Sc. Nursing")));
+    const records=snap.docs.map(d=>d.data()).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+    const present=records.filter(r=>r.status==="Present").length;
+    const percent=records.length?Math.round(present/records.length*100):0;
+    $("myTotal").textContent=records.length;$("myPresent").textContent=present;$("myPercent").textContent=percent+"%";$("myProgress").style.width=percent+"%";
+    $("myRecords").innerHTML="";
+    if(!records.length){$("myRecords").textContent="अभी कोई attendance record नहीं है।";return}
+    const table=document.createElement("table");table.innerHTML="<thead><tr><th>Date</th><th>Semester</th><th>Status</th></tr></thead>";
+    const body=document.createElement("tbody");
+    records.forEach(r=>{const tr=document.createElement("tr");[r.date||"",r.semester||"",r.status||""].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.append(td)});body.append(tr)});
+    table.append(body);$("myRecords").append(table);
+  }catch(e){msg("studentMsg","Attendance लोड नहीं हुई। Firestore rules/index और इंटरनेट जाँचें।","error")}
+}
+</script>
+</body>
+</html>
